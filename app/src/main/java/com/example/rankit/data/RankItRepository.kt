@@ -7,6 +7,7 @@ import com.example.rankit.data.db.entities.ComponentDefinition
 import com.example.rankit.data.db.entities.ComponentType
 import com.example.rankit.data.db.entities.Item
 import com.example.rankit.data.db.entities.RankingList
+import com.example.rankit.data.db.entities.RankingListWithCount
 import com.example.rankit.domain.validateConfig
 import kotlinx.coroutines.flow.Flow
 
@@ -18,6 +19,8 @@ class RankItRepository(
     // ── Queries ──────────────────────────────────────────────────────────────
 
     fun getLists(): Flow<List<RankingList>> = rankingListDao.getAll()
+
+    fun getListsWithCount(): Flow<List<RankingListWithCount>> = rankingListDao.getAllWithCount()
 
     fun getComponentDefsForList(listId: String): Flow<List<ComponentDefinition>> =
         componentDefinitionDao.getForList(listId)

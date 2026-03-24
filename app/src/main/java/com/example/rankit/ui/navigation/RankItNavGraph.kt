@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.rankit.ui.screens.home.HomeScreen
 
 @Composable
 fun RankItNavGraph(navController: NavHostController) {
@@ -14,8 +15,7 @@ fun RankItNavGraph(navController: NavHostController) {
         startDestination = Home
     ) {
         composable<Home> {
-            // TODO Task 7: replace with HomeScreen(navController)
-            Text("Home — stub")
+            HomeScreen(navController = navController)
         }
 
         composable<CreateList> {
