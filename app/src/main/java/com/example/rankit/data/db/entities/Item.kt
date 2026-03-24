@@ -21,7 +21,6 @@ data class Item(
     @PrimaryKey val id: String,
     val listId: String,
     // JSON blob: {"componentDefId1": "value", "componentDefId2": 8.5, ...}
-    // Null values indicate fields added to the schema after this item was created.
     val valuesJson: String,
     // False when any component value is null (schema evolved after item creation).
     val isComplete: Boolean,

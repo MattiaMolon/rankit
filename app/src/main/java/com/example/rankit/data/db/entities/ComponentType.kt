@@ -4,6 +4,5 @@ enum class ComponentType {
     TEXT,
     SLIDER,
     IMAGE,
-    DESCRIPTION,
     LOCATION
 }
