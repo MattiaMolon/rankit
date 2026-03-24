@@ -7,19 +7,14 @@ import com.example.rankit.data.db.entities.ComponentDefinition
 import com.example.rankit.data.db.entities.ComponentType
 import com.example.rankit.data.db.entities.Item
 import com.example.rankit.data.db.entities.RankingList
+import com.example.rankit.domain.validateConfig
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.boolean
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 
 class RankItRepository(
     private val rankingListDao: RankingListDao,
     private val componentDefinitionDao: ComponentDefinitionDao,
     private val itemDao: ItemDao
 ) {
-    private val json = Json { ignoreUnknownKeys = true }
-
     // ── Queries ──────────────────────────────────────────────────────────────
 
     fun getLists(): Flow<List<RankingList>> = rankingListDao.getAll()
@@ -34,7 +29,11 @@ class RankItRepository(
     // ── List operations ───────────────────────────────────────────────────────
 
     suspend fun createList(list: RankingList, componentDefs: List<ComponentDefinition>) {
-        validateHasScoringSlider(componentDefs)
+        componentDefs.forEach { it.validateConfig() }
+        require(componentDefs.any { it.type == ComponentType.SLIDER }) {
+            "At least one slider is required"
+        }
+
         rankingListDao.insert(list)
         componentDefinitionDao.insertAll(componentDefs)
     }
@@ -46,24 +45,4 @@ class RankItRepository(
     suspend fun addItem(item: Item) = itemDao.insert(item)
 
     suspend fun deleteItem(item: Item) = itemDao.delete(item)
-
-    // ── Validation ────────────────────────────────────────────────────────────
-
-    private fun validateHasScoringSlider(defs: List<ComponentDefinition>) {
-        val hasScoringSlider = defs.any { def ->
-            def.type == ComponentType.SLIDER && isScoringSlider(def.configJson)
-        }
-        require(hasScoringSlider) { "At least one scoring slider is required" }
-    }
-
-    private fun isScoringSlider(configJson: String): Boolean {
-        return try {
-            json.parseToJsonElement(configJson)
-                .jsonObject["isScoring"]
-                ?.jsonPrimitive
-                ?.boolean == true
-        } catch (e: Exception) {
-            false
-        }
-    }
 }
